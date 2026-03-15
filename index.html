@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ashvin Anthony-Das — UX Designer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: #fafafa; color: #1a1a2e; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #f4f4f8; }
+    ::-webkit-scrollbar-thumb { background: #3730a3; border-radius: 2px; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(16px);
+      border-bottom: 1px solid #e5e7eb;
+      padding: 0 5vw; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; letter-spacing: -0.5px; }
+    .nav-logo span { color: #4338ca; }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-link {
+      font-size: 0.875rem; font-weight: 500; letter-spacing: 0.02em;
+      color: #a0a0b0; cursor: pointer; position: relative; transition: color 0.2s;
+    }
+    .nav-link::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px; background: #4338ca; transition: width 0.3s ease; }
+    .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+    .nav-link.active { color: #4338ca; }
+
+    /* HERO */
+    .grid-bg {
+      background-image: linear-gradient(rgba(67,56,202,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(67,56,202,0.08) 1px, transparent 1px);
+      background-size: 80px 80px;
+    }
+    .accent-dot { width: 8px; height: 8px; background: #4338ca; border-radius: 50%; display: inline-block; }
+    .hero-char { display: inline-block; opacity: 0; animation: charIn 0.05s forwards; }
+    @keyframes charIn { to { opacity: 1; } }
+
+    /* FADE IN */
+    .fade-in { opacity: 0; transform: translateY(32px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* SKILLS */
+    .skill-pill {
+      padding: 10px 22px; border: 1px solid rgba(67,56,202,0.3); border-radius: 100px;
+      font-size: 0.875rem; color: #4a4a6a; background: rgba(67,56,202,0.05);
+      font-weight: 500; letter-spacing: 0.01em; cursor: default;
+      transition: all 0.25s ease;
+    }
+    .skill-pill:hover { background: #4338ca; color: #fff; transform: translateY(-2px); }
+
+    /* CARDS */
+    .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(67,56,202,0.15) !important; }
+
+    /* EXP */
+    .exp-item { border-left: 2px solid #d8d0ff; transition: border-color 0.3s; }
+    .exp-item:hover { border-left-color: #4338ca; }
+
+    /* MODAL */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(10,10,30,0.6); backdrop-filter: blur(8px);
+      align-items: center; justify-content: center; padding: 2rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 20px; width: 100%; max-width: 780px;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 32px 80px rgba(67,56,202,0.2); position: relative;
+    }
+    .modal-close {
+      position: absolute; top: 1.2rem; right: 1.2rem; z-index: 10;
+      background: rgba(67,56,202,0.1); border: none; border-radius: 50%;
+      width: 36px; height: 36px; cursor: pointer; font-size: 1.1rem;
+      color: #4338ca; display: flex; align-items: center; justify-content: center;
+    }
+    .modal-img-wrap { position: relative; background: #f4f4f8; border-radius: 20px 20px 0 0; overflow: hidden; }
+    .modal-img { width: 100%; max-height: 420px; object-fit: contain; display: block; }
+    .modal-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.9); border: none; border-radius: 50%;
+      width: 40px; height: 40px; cursor: pointer; font-size: 1.1rem; color: #1a1a2e;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+    .modal-arrow.prev { left: 1rem; }
+    .modal-arrow.next { right: 1rem; }
+    .modal-dots { position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
+    .modal-dot {
+      height: 8px; border-radius: 4px; border: none; cursor: pointer;
+      transition: all 0.2s; background: rgba(67,56,202,0.3);
+    }
+    .modal-dot.active { width: 20px; background: #4338ca; }
+    .modal-dot:not(.active) { width: 8px; }
+    .modal-content { padding: 2.5rem; }
+    .tag-badge {
+      background: rgba(67,56,202,0.12); color: #4338ca;
+      font-size: 0.7rem; padding: 4px 12px; border-radius: 100px;
+      font-weight: 600; letter-spacing: 0.05em;
+    }
+    .skill-tag { font-size: 0.78rem; color: #4338ca; background: rgba(67,56,202,0.1); padding: 5px 12px; border-radius: 4px; font-weight: 500; }
+    .skill-tag-sm { font-size: 0.72rem; color: #7a7a9a; background: #e4e4ef; padding: 4px 10px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">AAD<span>.</span></div>
+  <div class="nav-links">
+    <span class="nav-link active" onclick="navScrollTo('about')">About</span>
+    <span class="nav-link" onclick="navScrollTo('experience')">Experience</span>
+    <span class="nav-link" onclick="navScrollTo('skills')">Skills</span>
+    <span class="nav-link" onclick="navScrollTo('projects')">Projects</span>
+    <span class="nav-link" onclick="navScrollTo('contact')">Contact</span>
+  </div>
+</nav>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-img-wrap" id="modal-img-wrap" style="display:none">
+      <img class="modal-img" id="modal-img" src="" alt="" />
+      <div id="modal-arrows" style="display:none">
+        <button class="modal-arrow prev" onclick="prevImg()">‹</button>
+        <button class="modal-arrow next" onclick="nextImg()">›</button>
+        <div class="modal-dots" id="modal-dots"></div>
+      </div>
+    </div>
+    <div class="modal-content">
+      <span class="tag-badge" id="modal-tag"></span>
+      <h2 id="modal-title" style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;letter-spacing:-1px;margin-top:1rem;margin-bottom:1rem;color:#1a1a2e;"></h2>
+      <p id="modal-desc" style="color:#5a5a7a;line-height:1.8;font-size:1rem;margin-bottom:2rem;"></p>
+      <div id="modal-skills" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="grid-bg" style="min-height:100vh;display:flex;align-items:center;padding:0 5vw;padding-top:64px;position:relative;overflow:hidden;">
+  
+  
+  <div style="max-width:900px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;">
+      <span class="accent-dot"></span>
+      <span style="font-size:0.8rem;letter-spacing:0.15em;color:#4338ca;font-weight:600;text-transform:uppercase;">UX Designer · Information Scientist</span>
+    </div>
+    <h1 style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(3rem,8vw,7rem);line-height:0.95;letter-spacing:-3px;margin-bottom:2rem;">
+      <div id="hero-name"></div>
+    </h1>
+    <p style="max-width:520px;font-size:1.05rem;line-height:1.7;color:#5a5a7a;margin-bottom:2.5rem;">
+      UX- and product-oriented Master's graduate in Information Science with a strong technical background. Specialized in user-centered design, UX research, and digital platforms. I translate complex user needs and business requirements into clear design solutions through wireframes, prototypes, and usability testing.
+    </p>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+      <button onclick="navScrollTo('projects')" style="background:#4338ca;color:#fff;border:none;padding:14px 32px;border-radius:4px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.9rem;cursor:pointer;letter-spacing:0.02em;transition:background 0.2s;" onmouseover="this.style.background='#3730a3'" onmouseout="this.style.background='#4338ca'">
+        View Projects
+      </button>
+      <a href="#" onclick="window.location.href='ma'+'ilto:Ashvinanthonydas'+'@gmail.com'; return false;" style="background:#4338ca;color:#fff;padding:14px 32px;border-radius:4px;font-weight:600;font-size:0.9rem;">Get in Touch</a>
+      <a href="assets/Ashvin_Anthony-Das_CV.pdf" download="Ashvin_Anthony-Das_CV.pdf" style="background:#4338ca;color:#fff;padding:14px 32px;border-radius:4px;font-weight:600;font-size:0.9rem;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">↓ Download CV</a>
+    </div>
+  </div>
+  <div style="position:absolute;bottom:2rem;left:5vw;display:flex;align-items:center;gap:8px;color:#8a8aaa;">
+    <div style="width:1px;height:40px;background:linear-gradient(to bottom, transparent, #4338ca);"></div>
+    <span style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;">Scroll</span>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" style="padding:8rem 5vw;max-width:1100px;margin:0 auto;">
+  <div class="fade-in" style="display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center;">
+    <div>
+      <span style="font-size:0.75rem;letter-spacing:0.15em;color:#4338ca;font-weight:600;text-transform:uppercase;">About Me</span>
+      <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,4vw,3.5rem);letter-spacing:-2px;margin-top:1rem;line-height:1.05;">
+        Designing with<br /><span style="color:#4338ca;">purpose</span>.
+      </h2>
+      <p style="margin-top:1.5rem;color:#5a5a7a;line-height:1.8;font-size:1rem;">
+        I hold a Master's degree in Information Science from Aalborg Universitet and a Bachelor's in Information Technology. My work sits at the intersection of user psychology, business strategy, and visual craft.
+      </p>
+      <p style="margin-top:1rem;color:#5a5a7a;line-height:1.8;font-size:1rem;">
+        Fluent in Danish (native) and English (full professional), I thrive in collaborative, cross-functional teams and bring structure and creativity to every project.
+      </p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div style="background:#f0f0f5;border:1px solid rgba(67,56,202,0.12);border-radius:8px;padding:1.5rem;text-align:center;">
+        <div style="font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;color:#4338ca;">5+</div>
+        <div style="font-size:0.78rem;color:#7a7a9a;margin-top:4px;letter-spacing:0.05em;">Years of Study</div>
+      </div>
+      <div style="background:#f0f0f5;border:1px solid rgba(67,56,202,0.12);border-radius:8px;padding:1.5rem;text-align:center;">
+        <div style="font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;color:#4338ca;">3+</div>
+        <div style="font-size:0.78rem;color:#7a7a9a;margin-top:4px;letter-spacing:0.05em;">Projects Completed</div>
+      </div>
+      <div style="background:#f0f0f5;border:1px solid rgba(67,56,202,0.12);border-radius:8px;padding:1.5rem;text-align:center;">
+        <div style="font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;color:#4338ca;">10+</div>
+        <div style="font-size:0.78rem;color:#7a7a9a;margin-top:4px;letter-spacing:0.05em;">Tools Mastered</div>
+      </div>
+      <div style="background:#f0f0f5;border:1px solid rgba(67,56,202,0.12);border-radius:8px;padding:1.5rem;text-align:center;">
+        <div style="font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;color:#4338ca;">2</div>
+        <div style="font-size:0.78rem;color:#7a7a9a;margin-top:4px;letter-spacing:0.05em;">Languages</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" style="background:#f4f4f8;padding:8rem 5vw;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="fade-in">
+      <span style="font-size:0.75rem;letter-spacing:0.15em;color:#4338ca;font-weight:600;text-transform:uppercase;">Work Experience</span>
+      <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,4vw,3.5rem);letter-spacing:-2px;margin-top:1rem;margin-bottom:3rem;">
+        Where I've<br />been.
+      </h2>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0;">
+
+      <div class="fade-in">
+        <div class="exp-item" style="padding-left:2rem;padding-bottom:2.5rem;position:relative;">
+          <div style="position:absolute;left:-5px;top:4px;width:10px;height:10px;border-radius:50%;background:#4338ca;box-shadow:0 0 10px rgba(67,56,202,0.5);"></div>
+          <div style="display:flex;gap:1rem;align-items:baseline;flex-wrap:wrap;margin-bottom:0.5rem;">
+            <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.15rem;">Internship</h3>
+            <span style="color:#4338ca;font-weight:600;font-size:0.9rem;">Elgiganten</span>
+            <span style="color:#8a8aaa;font-size:0.8rem;margin-left:auto;">Jan 2026 – Jan 2026</span>
+          </div>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:4px;">
+            <li style="color:#6a6a8a;font-size:0.9rem;display:flex;gap:8px;align-items:flex-start;"><span style="color:#4338ca;margin-top:6px;flex-shrink:0;">—</span> IT service and support</li>
+            <li style="color:#6a6a8a;font-size:0.9rem;display:flex;gap:8px;align-items:flex-start;"><span style="color:#4338ca;margin-top:6px;flex-shrink:0;">—</span> Customer support across physical and technical challenges</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="fade-in">
+        <div class="exp-item" style="padding-left:2rem;padding-bottom:2.5rem;position:relative;">
+          <div style="position:absolute;left:-5px;top:4px;width:10px;height:10px;border-radius:50%;background:#4338ca;box-shadow:0 0 10px rgba(67,56,202,0.5);"></div>
+          <div style="display:flex;gap:1rem;align-items:baseline;flex-wrap:wrap;margin-bottom:0.5rem;">
+            <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.15rem;">UX Design Internship</h3>
+            <span style="color:#4338ca;font-weight:600;font-size:0.9rem;">Samuel Solutions</span>
+            <span style="color:#8a8aaa;font-size:0.8rem;margin-left:auto;">Oct 2024 – Jan 2025</span>
+          </div>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:4px;">
+            <li style="color:#6a6a8a;font-size:0.9rem;display:flex;gap:8px;align-items:flex-start;"><span style="color:#4338ca;margin-top:6px;flex-shrink:0;">—</span> Designed early sketches and wireframes for a real enterprise system</li>
+            <li style="color:#6a6a8a;font-size:0.9rem;display:flex;gap:8px;align-items:flex-start;"><span style="color:#4338ca;margin-top:6px;flex-shrink:0;">—</span> Communication bridge between organisation and stakeholders</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="fade-in">
+        <div class="exp-item" style="padding-left:2rem;padding-bottom:2.5rem;position:relative;">
+          <div style="position:absolute;left:-5px;top:4px;width:10px;height:10px;border-radius:50%;background:#4338ca;box-shadow:0 0 10px rgba(67,56,202,0.5);"></div>
+          <div style="display:flex;gap:1rem;align-items:baseline;flex-wrap:wrap;margin-bottom:0.5rem;">
+            <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.15rem;">Temporary Worker</h3>
+            <span style="color:#4338ca;font-weight:600;font-size:0.9rem;">Grundfos</span>
+            <span style="color:#8a8aaa;font-size:0.8rem;margin-left:auto;">Jul 2019 – May 2020</span>
+          </div>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:4px;">
+            <li style="color:#6a6a8a;font-size:0.9rem;display:flex;gap:8px;align-items:flex-start;"><span style="color:#4338ca;margin-top:6px;flex-shrink:0;">—</span> Teamwork in manufacturing environment</li>
+            <li style="color:#6a6a8a;font-size:0.9rem;display:flex;gap:8px;align-items:flex-start;"><span style="color:#4338ca;margin-top:6px;flex-shrink:0;">—</span> Structured work routine</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="fade-in">
+        <div class="exp-item" style="padding-left:2rem;padding-bottom:2.5rem;position:relative;">
+          <div style="position:absolute;left:-5px;top:4px;width:10px;height:10px;border-radius:50%;background:#4338ca;box-shadow:0 0 10px rgba(67,56,202,0.5);"></div>
+          <div style="display:flex;gap:1rem;align-items:baseline;flex-wrap:wrap;margin-bottom:0.5rem;">
+            <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.15rem;">Customer Service</h3>
+            <span style="color:#4338ca;font-weight:600;font-size:0.9rem;">Bilka</span>
+            <span style="color:#8a8aaa;font-size:0.8rem;margin-left:auto;">Aug 2016 – Jun 2018</span>
+          </div>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:4px;">
+            <li style="color:#6a6a8a;font-size:0.9rem;display:flex;gap:8px;align-items:flex-start;"><span style="color:#4338ca;margin-top:6px;flex-shrink:0;">—</span> Product knowledge</li>
+            <li style="color:#6a6a8a;font-size:0.9rem;display:flex;gap:8px;align-items:flex-start;"><span style="color:#4338ca;margin-top:6px;flex-shrink:0;">—</span> Flexible work roles</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" style="background:#f4f4f8;padding:8rem 5vw;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="fade-in">
+      <span style="font-size:0.75rem;letter-spacing:0.15em;color:#4338ca;font-weight:600;text-transform:uppercase;">Skills</span>
+      <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,4vw,3.5rem);letter-spacing:-2px;margin-top:1rem;margin-bottom:3rem;">
+        What I bring<br />to the table.
+      </h2>
+    </div>
+    <div class="fade-in" style="display:flex;flex-wrap:wrap;gap:0.75rem;">
+      <span class="skill-pill">Figma</span>
+      <span class="skill-pill">Miro</span>
+      <span class="skill-pill">Trello</span>
+      <span class="skill-pill">User Research</span>
+      <span class="skill-pill">Personas &amp; Journey Mapping</span>
+      <span class="skill-pill">Usability Testing</span>
+      <span class="skill-pill">Information Architecture</span>
+      <span class="skill-pill">UX Writing</span>
+      <span class="skill-pill">Stakeholder Interviews</span>
+      <span class="skill-pill">Problem Framing</span>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" style="padding:8rem 5vw;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="fade-in">
+      <span style="font-size:0.75rem;letter-spacing:0.15em;color:#4338ca;font-weight:600;text-transform:uppercase;">Case Studies</span>
+      <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,4vw,3.5rem);letter-spacing:-2px;margin-top:1rem;margin-bottom:3rem;">
+        Selected<br />Projects.
+      </h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;">
+
+      <!-- Project 1: Himmerland -->
+      <div class="fade-in">
+        <div class="card-hover" onclick="openModal(0)" style="background:#f0f0f5;border:1px solid rgba(67,56,202,0.12);border-radius:12px;overflow:hidden;height:100%;display:flex;flex-direction:column;box-shadow:0 4px 24px rgba(67,56,202,0.08);cursor:pointer;">
+          <div style="padding:2rem;display:flex;flex-direction:column;flex:1;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;">
+              <span style="background:rgba(67,56,202,0.15);color:#4338ca;font-size:0.7rem;padding:4px 12px;border-radius:100px;font-weight:600;letter-spacing:0.05em;">Bachelor Project</span>
+            </div>
+            <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;line-height:1.3;margin-bottom:1rem;">Community App — Himmerland Housing</h3>
+            <p style="color:#6a6a8a;font-size:0.9rem;line-height:1.7;flex:1;">Design and full development of a community application for Himmerland Housing Association, bridging residents and management through a digital platform.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:1.5rem;">
+              <span class="skill-tag-sm">UX Research</span>
+              <span class="skill-tag-sm">Prototyping</span>
+              <span class="skill-tag-sm">Community Design</span>
+            </div>
+            <div style="margin-top:1.5rem;font-size:0.8rem;color:#4338ca;font-weight:600;letter-spacing:0.03em;">View Case Study →</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project 2: AI Thesis -->
+      <div class="fade-in">
+        <div class="card-hover" onclick="openModal(1)" style="background:#f0f0f5;border:1px solid rgba(67,56,202,0.12);border-radius:12px;overflow:hidden;height:100%;display:flex;flex-direction:column;box-shadow:0 4px 24px rgba(67,56,202,0.08);cursor:pointer;">
+          <div style="padding:2rem;display:flex;flex-direction:column;flex:1;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;">
+              <span style="background:rgba(67,56,202,0.15);color:#4338ca;font-size:0.7rem;padding:4px 12px;border-radius:100px;font-weight:600;letter-spacing:0.05em;">Master's Thesis</span>
+            </div>
+            <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;line-height:1.3;margin-bottom:1rem;">AI &amp; Learning in Corporate Contexts</h3>
+            <p style="color:#6a6a8a;font-size:0.9rem;line-height:1.7;flex:1;">Explored how AI tools integrate into corporate learning environments — analysing usability, adoption patterns, and design implications for enterprise learning systems.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:1.5rem;">
+              <span class="skill-tag-sm">AI Research</span>
+              <span class="skill-tag-sm">UX Analysis</span>
+              <span class="skill-tag-sm">Information Science</span>
+            </div>
+            <div style="margin-top:1.5rem;font-size:0.8rem;color:#4338ca;font-weight:600;letter-spacing:0.03em;">View Case Study →</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project 3: Skoletek -->
+      <div class="fade-in">
+        <div class="card-hover" onclick="openModal(2)" style="background:#f0f0f5;border:1px solid rgba(67,56,202,0.12);border-radius:12px;overflow:hidden;height:100%;display:flex;flex-direction:column;box-shadow:0 4px 24px rgba(67,56,202,0.08);cursor:pointer;">
+          <div style="padding:2rem;display:flex;flex-direction:column;flex:1;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;">
+              <span style="background:rgba(67,56,202,0.15);color:#4338ca;font-size:0.7rem;padding:4px 12px;border-radius:100px;font-weight:600;letter-spacing:0.05em;">UX Project</span>
+            </div>
+            <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;line-height:1.3;margin-bottom:1rem;">Skoletek</h3>
+            <p style="color:#6a6a8a;font-size:0.9rem;line-height:1.7;flex:1;">Designed a concept for a digital platform that enables primary school teachers to share resources and collaborate on teaching technological literacy, based on user research, platform analysis, and UX prototyping.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:1.5rem;">
+              <span class="skill-tag-sm">User Research</span>
+              <span class="skill-tag-sm">UX Prototyping</span>
+              <span class="skill-tag-sm">Platform Design</span>
+            </div>
+            <div style="margin-top:1.5rem;font-size:0.8rem;color:#4338ca;font-weight:600;letter-spacing:0.03em;">View Case Study →</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project 4: LEGO -->
+      <div class="fade-in">
+        <div class="card-hover" onclick="openModal(3)" style="background:#f0f0f5;border:1px solid rgba(67,56,202,0.12);border-radius:12px;overflow:hidden;height:100%;display:flex;flex-direction:column;box-shadow:0 4px 24px rgba(67,56,202,0.08);cursor:pointer;">
+          <div style="padding:2rem;display:flex;flex-direction:column;flex:1;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;">
+              <span style="background:rgba(67,56,202,0.15);color:#4338ca;font-size:0.7rem;padding:4px 12px;border-radius:100px;font-weight:600;letter-spacing:0.05em;">Master's Project</span>
+            </div>
+            <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;line-height:1.3;margin-bottom:1rem;">Data Catalog Optimization — LEGO</h3>
+            <p style="color:#6a6a8a;font-size:0.9rem;line-height:1.7;flex:1;">Optimization of a data catalog for LEGO as part of the Master's program, improving information architecture and discoverability for internal teams.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:1.5rem;">
+              <span class="skill-tag-sm">Information Architecture</span>
+              <span class="skill-tag-sm">UX Design</span>
+              <span class="skill-tag-sm">Data Systems</span>
+            </div>
+            <div style="margin-top:1.5rem;font-size:0.8rem;color:#4338ca;font-weight:600;letter-spacing:0.03em;">View Case Study →</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" style="padding:8rem 5vw;text-align:center;position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse at center, rgba(67,56,202,0.08) 0%, transparent 70%);pointer-events:none;"></div>
+  <div class="fade-in">
+    <span style="font-size:0.75rem;letter-spacing:0.15em;color:#4338ca;font-weight:600;text-transform:uppercase;">Contact</span>
+    <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2.5rem,6vw,5rem);letter-spacing:-3px;margin-top:1rem;line-height:1;">
+      Let's work<br /><span style="color:#4338ca;">together.</span>
+    </h2>
+    <p style="color:#7a7a9a;margin-top:1.5rem;margin-bottom:2.5rem;font-size:1rem;">Open to UX roles, collaborations, and interesting projects.</p>
+    <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+      <a href="#" onclick="window.location.href='ma'+'ilto:Ashvinanthonydas'+'@gmail.com'; return false;" style="background:#4338ca;color:#fff;padding:14px 32px;border-radius:4px;font-weight:600;font-size:0.9rem;">Get in Touch</a>
+      
+      <a href="https://www.linkedin.com/in/ashvin-anthony-das/" target="_blank" rel="noreferrer" style="background:#4338ca;color:#fff;padding:14px 32px;border-radius:4px;font-weight:600;font-size:0.9rem;">LinkedIn ↗</a>
+      <a href="assets/Ashvin_Anthony-Das_CV.pdf" download="Ashvin_Anthony-Das_CV.pdf" style="background:#4338ca;color:#fff;padding:14px 32px;border-radius:4px;font-weight:600;font-size:0.9rem;display:inline-flex;align-items:center;gap:8px;">↓ Download CV</a>
+    </div>
+  </div>
+</section>
+
+<footer style="border-top:1px solid rgba(67,56,202,0.12);padding:2rem 5vw;display:flex;justify-content:space-between;align-items:center;color:#9a9aba;font-size:0.8rem;">
+  <span style="font-family:'Syne',sans-serif;font-weight:700;">AAD<span style="color:#4338ca;">.</span></span>
+  <span>© 2026 Ashvin Anthony-Das</span>
+  <span>91 60 55 67</span>
+</footer>
+
+<script>
+// ── Hero name animation ──────────────────────────────────────────────────────
+(function() {
+  const words = ["Ashvin", "Anthony-Das"];
+  const colors = ["#1a1a2e", "#4338ca"];
+  const container = document.getElementById("hero-name");
+  let delay = 0;
+  words.forEach((word, wi) => {
+    const div = document.createElement("div");
+    word.split("").forEach((ch, ci) => {
+      const span = document.createElement("span");
+      span.className = "hero-char";
+      span.textContent = ch;
+      span.style.animationDelay = delay + "s";
+      span.style.color = colors[wi];
+      delay += 0.04;
+      div.appendChild(span);
+    });
+    delay += 0.3;
+    container.appendChild(div);
+  });
+})();
+
+// ── Scroll spy ───────────────────────────────────────────────────────────────
+window.addEventListener("scroll", function() {
+  const sections = ["about","experience","skills","projects","contact"];
+  const links = document.querySelectorAll(".nav-link");
+  let active = "about";
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top <= 120) active = id;
+  });
+  links.forEach(l => {
+    const text = l.textContent.toLowerCase();
+    l.classList.toggle("active", text === active);
+    l.style.color = text === active ? "#4338ca" : "#a0a0b0";
+  });
+}, { passive: true });
+
+// ── Smooth scroll ────────────────────────────────────────────────────────────
+function navScrollTo(id) {
+  const el = document.getElementById(id.toLowerCase());
+  if (el) el.scrollIntoView({ behavior: "smooth" });
+}
+
+// ── Fade-in on scroll ────────────────────────────────────────────────────────
+(function() {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("visible"); obs.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll(".fade-in").forEach(el => obs.observe(el));
+})();
+
+// ── Project data ─────────────────────────────────────────────────────────────
+const HIMMERLAND_IMG = "assets/himmerland-housing.png";
+
+const PROJECTS = [
+  {
+    tag: "Bachelor Project",
+    title: "Community App — Himmerland Housing",
+    desc: "Design and full development of a community application for Himmerland Housing Association, bridging residents and management through a digital platform.",
+    skills: ["UX Research", "Prototyping", "Community Design"],
+    images: [HIMMERLAND_IMG]
+  },
+  {
+    tag: "Master's Thesis",
+    title: "AI & Learning in Corporate Contexts",
+    desc: "Explored how AI tools integrate into corporate learning environments — analysing usability, adoption patterns, and design implications for enterprise learning systems.",
+    skills: ["AI Research", "UX Analysis", "Information Science"],
+    images: []
+  },
+  {
+    tag: "UX Project",
+    title: "Skoletek",
+    desc: "Designed a concept for a digital platform that enables primary school teachers to share resources and collaborate on teaching technological literacy, based on user research, platform analysis, and UX prototyping.",
+    skills: ["User Research", "UX Prototyping", "Platform Design"],
+    images: ["assets/skoletek-1.png", "assets/skoletek-2.png", "assets/skoletek-3.png", "assets/skoletek-4.png", "assets/skoletek-5.png"]
+  },
+  {
+    tag: "Master's Project",
+    title: "Data Catalog Optimization — LEGO",
+    desc: "Optimization of a data catalog for LEGO as part of the Master's program, improving information architecture and discoverability for internal teams.",
+    skills: ["Information Architecture", "UX Design", "Data Systems"],
+    images: []
+  }
+];
+
+// ── Modal ────────────────────────────────────────────────────────────────────
+let currentProject = null;
+let currentImgIndex = 0;
+
+function openModal(idx) {
+  currentProject = PROJECTS[idx];
+  currentImgIndex = 0;
+  document.getElementById("modal-tag").textContent = currentProject.tag;
+  document.getElementById("modal-title").textContent = currentProject.title;
+  document.getElementById("modal-desc").textContent = currentProject.desc;
+  const skillsEl = document.getElementById("modal-skills");
+  skillsEl.innerHTML = currentProject.skills.map(s => `<span class="skill-tag">${s}</span>`).join("");
+
+  const imgWrap = document.getElementById("modal-img-wrap");
+  if (currentProject.images && currentProject.images.length > 0) {
+    imgWrap.style.display = "block";
+    document.getElementById("modal-img").src = currentProject.images[0];
+    document.getElementById("modal-img").alt = currentProject.title;
+    const arrows = document.getElementById("modal-arrows");
+    if (currentProject.images.length > 1) {
+      arrows.style.display = "block";
+      const dotsEl = document.getElementById("modal-dots");
+      dotsEl.innerHTML = currentProject.images.map((_, i) =>
+        `<button class="modal-dot ${i === 0 ? 'active' : ''}" onclick="goImg(${i})"></button>`
+      ).join("");
+    } else {
+      arrows.style.display = "none";
+    }
+  } else {
+    imgWrap.style.display = "none";
+  }
+
+  document.getElementById("modal").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById("modal") || !e.target) {
+    document.getElementById("modal").classList.remove("open");
+    document.body.style.overflow = "";
+  }
+}
+
+function goImg(i) {
+  currentImgIndex = i;
+  document.getElementById("modal-img").src = currentProject.images[i];
+  document.querySelectorAll(".modal-dot").forEach((d, di) => d.classList.toggle("active", di === i));
+}
+function prevImg() { goImg((currentImgIndex - 1 + currentProject.images.length) % currentProject.images.length); }
+function nextImg() { goImg((currentImgIndex + 1) % currentProject.images.length); }
+
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+// Email assembly - split to avoid extension detection
+var emailUser = 'Ashvinanthonydas';
+var emailDomain = 'gmail.com';
+var emailFull = emailUser + '@' + emailDomain;
+var emailBtn = document.getElementById('email-btn');
+var heroBtn = document.getElementById('hero-email-btn');
+// email-btn text stays as "Get in Touch"
+if (heroBtn) heroBtn.textContent = 'Get in Touch';
+
+</script>
+</body>
+</html>
