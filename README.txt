@@ -2,10 +2,7 @@
   ASHVIN ANTHONY-DAS — PORTFOLIO FILES
 ========================================
 
-HOW TO USE
-----------
-Open "portfolio.html" in any browser (Chrome, Firefox, Safari).
-The "assets" folder must stay in the same location as portfolio.html.
+This is my portfolio
 
 FILE OVERVIEW
 -------------
